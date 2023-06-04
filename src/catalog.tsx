@@ -13,11 +13,13 @@ export const Catalog = () => {
   return (
     <div className="Catalog">
       <img src={logo} alt="" className="logoCatalog" />
-      <button className="buttonCatalog" onClick={() => setCatalogActive(true)}>
+      <button className="buttonCatalog" onClick={() => setCatalogActive(catalogActive ? false : true)}>
         <img src={burger} alt="" />
         Каталог
       </button>
-      <DetailCatalog active={catalogActive} setActive={setCatalogActive}/>
+      <div className="Catalog-Detail">
+        <DetailCatalog active={catalogActive} setActive={setCatalogActive} />
+      </div>
       <form action="" className="searchCatalog">
         <input type="text" placeholder="Искать товар" />
         <button>
