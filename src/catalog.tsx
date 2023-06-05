@@ -8,16 +8,13 @@ import { FiShoppingCart } from "react-icons/fi";
 import { FiHeart } from "react-icons/fi";
 import { TfiMenu, TfiClose } from "react-icons/tfi";
 
-export const Catalog = () => {
+export const Catalog = ({ setNameOfUser }: { setNameOfUser: (name: string) => void }) => {
   const [modalActive, setModalActive] = useState(false);
   const [catalogActive, setCatalogActive] = useState(false);
   return (
     <div className="Catalog">
       <img src={logo} alt="" className="logoCatalog" />
-      <button
-        className="buttonCatalog"
-        onClick={() => setCatalogActive(catalogActive ? false : true)}
-      >
+      <button className="buttonCatalog" onClick={() => setCatalogActive(catalogActive ? false : true)}>
         <span>{catalogActive ? <TfiClose /> : <TfiMenu />}</span>
         Каталог
       </button>
@@ -42,7 +39,7 @@ export const Catalog = () => {
       <button onClick={() => setModalActive(true)} className="profileCatalog">
         <FiUser />
       </button>
-      <ModalsProfile active={modalActive} setActive={setModalActive} />
+      <ModalsProfile active={modalActive} setActive={setModalActive} setNameOfUser={setNameOfUser} />
     </div>
   );
 };
