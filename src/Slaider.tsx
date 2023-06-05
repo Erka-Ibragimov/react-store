@@ -58,7 +58,6 @@ export const Slaider = () => {
       <div className="wrapSlider">
         {data.map((item, itemIndex) => {
           const { id, title, text, img, discount } = item;
-          console.log(img);
           let position = "nextSlide";
           if (itemIndex === index) {
             position = "activeSlide";

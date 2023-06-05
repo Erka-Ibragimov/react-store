@@ -6,6 +6,7 @@ import { Location } from './location';
 import { Catalog } from './catalog';
 import { Route } from './Route';
 import { Slaider } from './Slaider';
+import { TopSold } from './TopSold';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Catalog/>
         <Route/>
         <Slaider/>
+        <TopSold/>
     </div>        
   );
 }
