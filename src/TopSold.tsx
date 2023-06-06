@@ -3,13 +3,20 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { FiShoppingCart } from "react-icons/fi";
 import { FiHeart } from "react-icons/fi";
-import top1sold from "./images/top-sold-1.svg";
-import top2sold from "./images/top-sold-2.svg";
-import top3sold from "./images/top-sold-3.svg";
-import top4sold from "./images/top-sold-4.svg";
 import { useState } from "react";
+import axios from "axios";
 
-export const TopSold = () => {
+export const TopSold = ({
+  count,
+  setCount,
+  hasLike,
+  setHasLike,
+}: {
+  count: number;
+  setCount: (num: number) => void;
+  hasLike: any;
+  setHasLike: (obj: any) => void;
+}) => {
   let settings = {
     dots: true,
     infinite: true,
@@ -21,87 +28,81 @@ export const TopSold = () => {
     pauseOnHover: true,
   };
 
-  const [hasLike, setHasLike] = useState([
-    {
-      id: 1,
-      img: top1sold,
-      title: 'Диван "Ergonomic Rubber Shoes”',
-      price: "35 990 ₽",
-      activeLike: false,
-      activeBasket: false,
-    },
-    {
-      id: 2,
-      img: top2sold,
-      title: 'Диван "Ergonomic Rubber Shoes”',
-      price: "35 990 ₽",
-      activeLike: false,
-      activeBasket: false,
-    },
-    {
-      id: 3,
-      img: top3sold,
-      title: 'Диван "Ergonomic Rubber Shoes”',
-      price: "35 990 ₽",
-      activeLike: false,
-      activeBasket: false,
-    },
-    {
-      id: 4,
-      img: top4sold,
-      title: 'Диван "Ergonomic Rubber Shoes”',
-      price: "35 990 ₽",
-      activeLike: false,
-      activeBasket: false,
-    },
-    {
-      id: 5,
-      img: top3sold,
-      title: 'Диван "Ergonomic Rubber Shoes”',
-      price: "35 990 ₽",
-      activeLike: false,
-      activeBasket: false,
-    },
-    {
-      id: 6,
-      img: top4sold,
-      title: 'Диван "Ergonomic Rubber Shoes”',
-      price: "35 990 ₽",
-      activeLike: false,
-      activeBasket: false,
-    },
-  ]);
-
   return (
     <div className="TopSold">
       <h1>Хиты продаж</h1>
       <Slider {...settings}>
-        {hasLike.map((el) => {
+        {hasLike.map((el: any) => {
           return (
             <div className="topOneSlide" key={el.id}>
               <img src={el.img} alt="" />
               <div className="buttons">
                 <button
                   onClick={() => {
-                    if (el.activeLike) {
-                      el.activeLike = false;
-                    } else {
-                      el.activeLike = true;
+                    try {
+                      const user = JSON.parse(
+                        window.localStorage.getItem("user")!
+                      );
+                      if (!user) {
+                        throw new Error("Вы не вошли в аккаунт");
+                      }
+                      if (el.activeLike) {
+                        el.activeLike = false;
+                      } else {
+                        el.activeLike = true;
+                      }
+                      setHasLike([...hasLike]);
+                    } catch (e: any) {
+                      if (e instanceof Error) {
+                        alert(e.message);
+                      }
                     }
-                    setHasLike([...hasLike]);
                   }}
                   className={el.activeLike ? "isLike" : ""}
                 >
                   <FiHeart />
                 </button>
                 <button
-                  onClick={() => {
-                    if (el.activeBasket) {
-                      el.activeBasket = false;
-                    } else {
-                      el.activeBasket = true;
+                  onClick={async () => {
+                    try {
+                      if (!el.activeBasket) {
+                        const user = JSON.parse(
+                          window.localStorage.getItem("user")!
+                        );
+                        if (!user) {
+                          throw new Error("Вы не вошли в аккаунт");
+                        }
+                        const body = {
+                          jsonrpc: "2.0",
+                          id: "1234567890",
+                          method: "Device.add",
+                          params: {
+                            name: el.title,
+                            price: el.price,
+                            type: el.type,
+                            brand: el.brand,
+                            image: el.img,
+                            staticId: el.id,
+                          },
+                        };
+                        await axios.post("http://localhost:7000", body, {
+                          headers: {
+                            Authorization: `Bearer ${user.token}`,
+                          },
+                        });
+                        el.activeBasket = true;
+                        count += 1;
+                        setCount(count);
+                        setHasLike([...hasLike]);
+                      }
+                    } catch (e: any) {
+                      if (e instanceof Error) {
+                        alert(e.message);
+                        return;
+                      }
+                      const error = e.response.data.error.message;
+                      alert(error);
                     }
-                    setHasLike([...hasLike]);
                   }}
                   className={el.activeBasket ? "isBasket" : ""}
                 >

@@ -8,9 +8,84 @@ import { Route } from "./Route";
 import { Slaider } from "./Slaider";
 import { TopSold } from "./TopSold";
 import { useState } from "react";
+import top1sold from "./images/top-sold-1.svg";
+import top2sold from "./images/top-sold-2.svg";
+import top3sold from "./images/top-sold-3.svg";
+import top4sold from "./images/top-sold-4.svg";
 
 function App() {
+  const [hasLike, setHasLike] = useState([
+    {
+      id: 1,
+      img: top1sold,
+      title: 'Диван "Ergonomic Rubber Shoes”',
+      price: "35 990 ₽",
+      rate: null,
+      type: "furniture",
+      brand: "jojo",
+      activeLike: false,
+      activeBasket: false,
+    },
+    {
+      id: 2,
+      img: top2sold,
+      title: 'Диван "Ergonomic Rubber Shoes”',
+      price: "35 990 ₽",
+      rate: null,
+      type: "furniture",
+      brand: "jojo",
+      activeLike: false,
+      activeBasket: false,
+    },
+    {
+      id: 3,
+      img: top3sold,
+      title: 'Диван "Ergonomic Rubber Shoes”',
+      price: "35 990 ₽",
+      rate: null,
+      type: "furniture",
+      brand: "jojo",
+      activeLike: false,
+      activeBasket: false,
+    },
+    {
+      id: 4,
+      img: top4sold,
+      title: 'Диван "Ergonomic Rubber Shoes”',
+      price: "35 990 ₽",
+      rate: null,
+      type: "furniture",
+      brand: "jojo",
+      activeLike: false,
+      activeBasket: false,
+    },
+    {
+      id: 5,
+      img: top3sold,
+      title: 'Диван "Ergonomic Rubber Shoes”',
+      price: "35 990 ₽",
+      rate: null,
+      type: "furniture",
+      brand: "jojo",
+      activeLike: false,
+      activeBasket: false,
+    },
+    {
+      id: 6,
+      img: top4sold,
+      title: 'Диван "Ergonomic Rubber Shoes”',
+      price: "35 990 ₽",
+      rate: null,
+      type: "furniture",
+      brand: "jojo",
+      activeLike: false,
+      activeBasket: false,
+    },
+  ]);
   const [nameOfUser, setNameOfUser] = useState("");
+  const [image, setImage] = useState<string | null>(null);
+  let [count, setCount] = useState<number>(0);
+
   return (
     <div className="App">
       <h4 className="freeDelivery">
@@ -19,11 +94,25 @@ function App() {
         </span>
         Доставка и сборы по Харькову бесплатно
       </h4>
-      <Location nameOfUser={nameOfUser} />
-      <Catalog setNameOfUser={setNameOfUser} />
+      <Location nameOfUser={nameOfUser} image={image} setImage={setImage} />
+      <Catalog
+        setNameOfUser={setNameOfUser}
+        nameOfUser={nameOfUser}
+        image={image}
+        setImage={setImage}
+        count={count}
+        setCount={setCount}
+        hasLike={hasLike}
+        setHasLike={setHasLike}
+      />
       <Route />
       <Slaider />
-      <TopSold />
+      <TopSold
+        count={count}
+        setCount={setCount}
+        hasLike={hasLike}
+        setHasLike={setHasLike}
+      />
     </div>
   );
 }
