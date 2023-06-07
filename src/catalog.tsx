@@ -30,7 +30,7 @@ export const Catalog = ({
 }) => {
   const [modalActive, setModalActive] = useState(false);
   const [catalogActive, setCatalogActive] = useState(false);
-  // const [basketActive, setBasketActive] = useState(false);
+  const [basketActive, setBasketActive] = useState(false);
   const [dataBasket, setDataBasket] = useState([]);
   return (
     <div className="Catalog">
@@ -74,7 +74,7 @@ export const Catalog = ({
             });
             const data = response.data.result;
             setDataBasket(data);
-            // setBasketActive(true);
+            setBasketActive(true);
           } catch (e: any) {
             if (e instanceof Error) {
               alert(e.message);
@@ -106,7 +106,7 @@ export const Catalog = ({
               setNameOfUser("");
               setImage(null);
               setCount(0);
-              // setBasketActive(false);
+              setBasketActive(false);
               setDataBasket([]);
               hasLike.forEach((el: any) => {
                 el.activeBasket = false;
@@ -131,7 +131,16 @@ export const Catalog = ({
         setActive={setModalActive}
         setNameOfUser={setNameOfUser}
       />
-      <BasketResult dataBasket={dataBasket} />
+      <BasketResult
+        dataBasket={dataBasket}
+        setDataBasket={setDataBasket}
+        count={count}
+        setCount={setCount}
+        hasLike={hasLike}
+        setHasLike={setHasLike}
+        basketActive={basketActive}
+        setBasketActive={setBasketActive}
+      />
     </div>
   );
 };

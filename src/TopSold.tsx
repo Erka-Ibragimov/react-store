@@ -5,6 +5,7 @@ import { FiShoppingCart } from "react-icons/fi";
 import { FiHeart } from "react-icons/fi";
 import { useState } from "react";
 import axios from "axios";
+import { CatchError } from "./errorHandler/catchError";
 
 export const TopSold = ({
   count,
@@ -44,7 +45,7 @@ export const TopSold = ({
                         window.localStorage.getItem("user")!
                       );
                       if (!user) {
-                        throw new Error("Вы не вошли в аккаунт");
+                        throw new CatchError(404, "Вы не вошли в аккаунт");
                       }
                       if (el.activeLike) {
                         el.activeLike = false;
@@ -53,7 +54,7 @@ export const TopSold = ({
                       }
                       setHasLike([...hasLike]);
                     } catch (e: any) {
-                      if (e instanceof Error) {
+                      if (e instanceof CatchError) {
                         alert(e.message);
                       }
                     }
@@ -70,7 +71,7 @@ export const TopSold = ({
                           window.localStorage.getItem("user")!
                         );
                         if (!user) {
-                          throw new Error("Вы не вошли в аккаунт");
+                          throw new CatchError(404, "Вы не вошли в аккаунт");
                         }
                         const body = {
                           jsonrpc: "2.0",
@@ -96,7 +97,7 @@ export const TopSold = ({
                         setHasLike([...hasLike]);
                       }
                     } catch (e: any) {
-                      if (e instanceof Error) {
+                      if (e instanceof CatchError) {
                         alert(e.message);
                         return;
                       }
