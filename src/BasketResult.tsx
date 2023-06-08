@@ -22,6 +22,8 @@ export const BasketResult = ({
   setBasketActive: (el: boolean) => void;
 }) => {
   const [totalSum, setTotalSum] = useState(0);
+  const [inputCheck, setInputCheck] = useState(true);
+  const [btnActive, setBtnActive] = useState(true);
 
   useEffect(() => {
     const sum = dataBasket.reduce(
@@ -29,14 +31,21 @@ export const BasketResult = ({
         previousValue + Number(currentValue.price),
       0
     );
-
     setTotalSum(sum);
   }, [basketActive]);
+
+  useEffect(() => {
+    if (totalSum === 0) {
+      setBtnActive(false);
+    } else {
+      setBtnActive(true);
+    }
+  }, [totalSum]);
 
   return (
     <div className={basketActive ? "BasketResult" : "BasketResult active"}>
       <div className="titleAndExit">
-        <h1>Ваша корзина:</h1>
+        <h1>Ваша корзина, {count} товара</h1>
         <button
           onClick={() => {
             setBasketActive(false);
@@ -44,6 +53,46 @@ export const BasketResult = ({
         >
           X
         </button>
+      </div>
+      <div className="selectAll">
+        <input
+          type="checkbox"
+          checked={inputCheck}
+          onChange={async (e) => {
+            const arrDeviceId: any = [];
+            let newTotalSum: number = 0;
+            const test = e.currentTarget.checked;
+            dataBasket.forEach((el: any) => {
+              arrDeviceId.push(el.id);
+              if (e.currentTarget.checked) {
+                newTotalSum += el.count * +el.price;
+                el.isCheck = true;
+              } else {
+                newTotalSum = 0;
+                el.isCheck = false;
+              }
+            });
+            const user = JSON.parse(window.localStorage.getItem("user")!);
+            const body = {
+              jsonrpc: "2.0",
+              id: "1234567890",
+              method: "Device.isCheckAll",
+              params: {
+                arrDeviceId,
+                isCheck: e.currentTarget.checked,
+              },
+            };
+            await axios.post("http://localhost:7000", body, {
+              headers: {
+                Authorization: `Bearer ${user.token}`,
+              },
+            });
+            setTotalSum(newTotalSum);
+            setInputCheck(test);
+            setDataBasket([...dataBasket]);
+          }}
+        />
+        <p>{inputCheck ? "Снять все" : "Выделить все"}</p>
       </div>
       <div className="mainBlock">
         <div className="things">
@@ -55,9 +104,50 @@ export const BasketResult = ({
             Корзина пуста
           </h1>
           {dataBasket.map((el: any) => {
+            let allIsChecked = 0;
             return (
               <div key={el.id} className="BasketItem">
-                <input type="checkbox" />
+                <input
+                  type="checkbox"
+                  checked={el.isCheck}
+                  onChange={async (e) => {
+                    if (!e.currentTarget.checked) {
+                      setInputCheck(false);
+                      setTotalSum(totalSum - el.count * +el.price);
+                    } else {
+                      setTotalSum(totalSum + el.count * +el.price);
+                    }
+                    el.isCheck = e.currentTarget.checked;
+                    const user = JSON.parse(
+                      window.localStorage.getItem("user")!
+                    );
+                    const body = {
+                      jsonrpc: "2.0",
+                      id: "1234567890",
+                      method: "Device.isCheck",
+                      params: {
+                        deviceId: el.id,
+                        isCheck: e.currentTarget.checked,
+                      },
+                    };
+                    await axios.post("http://localhost:7000", body, {
+                      headers: {
+                        Authorization: `Bearer ${user.token}`,
+                      },
+                    });
+                    dataBasket.forEach((q: any) => {
+                      if (q.isCheck) {
+                        allIsChecked += 1;
+                      }
+                    });
+
+                    if (allIsChecked === dataBasket.length) {
+                      allIsChecked = 0;
+                      setInputCheck(true);
+                    }
+                    setDataBasket([...dataBasket]);
+                  }}
+                />
                 <img src={el.pathImg} alt="" />
                 <div className="title">
                   <h3>Название: {el.name}</h3>
@@ -67,9 +157,24 @@ export const BasketResult = ({
                 <div className="countOneThing">
                   <button
                     onClick={async () => {
+                      let allIsChecked3 = 0;
                       const user = JSON.parse(
                         window.localStorage.getItem("user")!
                       );
+                      const bodyIsCheck = {
+                        jsonrpc: "2.0",
+                        id: "1234567890",
+                        method: "Device.isCheck",
+                        params: {
+                          deviceId: el.id,
+                          isCheck: true,
+                        },
+                      };
+                      await axios.post("http://localhost:7000", bodyIsCheck, {
+                        headers: {
+                          Authorization: `Bearer ${user.token}`,
+                        },
+                      });
                       const body = {
                         jsonrpc: "2.0",
                         id: "1234567890",
@@ -100,8 +205,22 @@ export const BasketResult = ({
                         }
                       );
                       const data = response.data.result;
+                      data.forEach((q: any) => {
+                        if (q.isCheck) {
+                          allIsChecked += 1;
+                        }
+                      });
+
+                      if (allIsChecked === dataBasket.length) {
+                        allIsChecked = 0;
+                        setInputCheck(true);
+                      }
                       setDataBasket([...data]);
-                      setTotalSum(totalSum - +el.price);
+                      if (!el.isCheck) {
+                        setTotalSum(totalSum + +el.price * (el.count - 1));
+                      } else {
+                        setTotalSum(totalSum - +el.price);
+                      }
                     }}
                     className="minus"
                   >
@@ -110,9 +229,24 @@ export const BasketResult = ({
                   <p>{el.count}</p>
                   <button
                     onClick={async () => {
+                      let allIsChecked2 = 0;
                       const user = JSON.parse(
                         window.localStorage.getItem("user")!
                       );
+                      const bodyIsCheck = {
+                        jsonrpc: "2.0",
+                        id: "1234567890",
+                        method: "Device.isCheck",
+                        params: {
+                          deviceId: el.id,
+                          isCheck: true,
+                        },
+                      };
+                      await axios.post("http://localhost:7000", bodyIsCheck, {
+                        headers: {
+                          Authorization: `Bearer ${user.token}`,
+                        },
+                      });
                       const body = {
                         jsonrpc: "2.0",
                         id: "1234567890",
@@ -143,8 +277,22 @@ export const BasketResult = ({
                         }
                       );
                       const data = response.data.result;
+                      data.forEach((q: any) => {
+                        if (q.isCheck) {
+                          allIsChecked += 1;
+                        }
+                      });
+
+                      if (allIsChecked === dataBasket.length) {
+                        allIsChecked = 0;
+                        setInputCheck(true);
+                      }
                       setDataBasket(data);
-                      setTotalSum(totalSum + +el.price);
+                      if (!el.isCheck) {
+                        setTotalSum(totalSum + +el.price * (el.count + 1));
+                      } else {
+                        setTotalSum(totalSum + +el.price);
+                      }
                     }}
                     className="plus"
                   >
@@ -202,7 +350,11 @@ export const BasketResult = ({
                         });
                         setHasLike([...hasLike]);
                         setCount(count - 1);
-                        setTotalSum(totalSum - countOfRemove * +priceOfRemove);
+                        if (el.isCheck)
+                          setTotalSum(
+                            totalSum - countOfRemove * +priceOfRemove
+                          );
+
                         setDataBasket([...data]);
                       } catch (e: any) {
                         const error = e.response.data.error.message;
@@ -228,7 +380,16 @@ export const BasketResult = ({
           <h2>
             Итог: <span>{`${totalSum} сумм`}</span>
           </h2>
-          <button>Перейти к оформлению</button>
+          <button
+            className={btnActive ? "" : "noactive"}
+            onClick={() => {
+              if (totalSum === 0) {
+                return;
+              }
+            }}
+          >
+            Перейти к оформлению
+          </button>
         </div>
       </div>
     </div>
