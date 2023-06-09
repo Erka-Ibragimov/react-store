@@ -85,7 +85,7 @@ function App() {
   const [nameOfUser, setNameOfUser] = useState("");
   const [image, setImage] = useState<string | null>(null);
   let [count, setCount] = useState<number>(0);
-
+  const [likeItem, setLikeItem] = useState<string[]>([]);
   return (
     <div className="App">
       <h4 className="freeDelivery">
@@ -112,6 +112,8 @@ function App() {
         setCount={setCount}
         hasLike={hasLike}
         setHasLike={setHasLike}
+        likeItem={likeItem}
+        setLikeItem={setLikeItem}
       />
     </div>
   );

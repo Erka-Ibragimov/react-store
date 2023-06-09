@@ -8,6 +8,8 @@ import { TfiMenu, TfiClose } from "react-icons/tfi";
 import { CiLogout } from "react-icons/ci";
 import axios from "axios";
 import { BasketResult } from "./BasketResult";
+import { CatchError } from "./errorHandler/catchError";
+import { LikesResult } from "./LikesResult";
 
 export const Catalog = ({
   setNameOfUser,
@@ -32,6 +34,8 @@ export const Catalog = ({
   const [catalogActive, setCatalogActive] = useState(false);
   const [basketActive, setBasketActive] = useState(false);
   const [dataBasket, setDataBasket] = useState([]);
+  const [openLikes, setOpenLikes] = useState(false);
+  const [resultLikes, setResultLikes] = useState([]);
   return (
     <div className="Catalog">
       <img src={logo} alt="" className="logoCatalog" />
@@ -54,12 +58,47 @@ export const Catalog = ({
       <a className="phoneCatalog" href="+998905939927">
         +998905939927
       </a>
-      <button className="heartCatalog">
+      <button
+        onClick={async () => {
+          try {
+            const user = JSON.parse(window.localStorage.getItem("user")!);
+            if (!user) {
+              throw new CatchError(404, "Не найден пользователь");
+            }
+            const body = {
+              jsonrpc: "2.0",
+              id: "1234567890",
+              method: "LikeDevice.getAll",
+              params: {},
+            };
+            const response = await axios.post("http://localhost:7000", body, {
+              headers: {
+                Authorization: `Bearer ${user.token}`,
+              },
+            });
+            setOpenLikes(true);
+            setResultLikes(response.data.result);
+          } catch (e: any) {
+            if (e instanceof CatchError) {
+              alert(e.message);
+              return;
+            }
+            if (e instanceof Error) {
+              alert(e.message);
+              return;
+            }
+          }
+        }}
+        className="heartCatalog"
+      >
         <FiHeart />
       </button>
       <button
         onClick={async () => {
           try {
+            if (count === 0) {
+              throw new CatchError(404, "Ваша корзина пуста");
+            }
             const user = JSON.parse(window.localStorage.getItem("user")!);
             const body = {
               jsonrpc: "2.0",
@@ -76,6 +115,10 @@ export const Catalog = ({
             setDataBasket(data);
             setBasketActive(true);
           } catch (e: any) {
+            if (e instanceof CatchError) {
+              alert(e.message);
+              return;
+            }
             if (e instanceof Error) {
               alert(e.message);
             }
@@ -140,6 +183,14 @@ export const Catalog = ({
         setHasLike={setHasLike}
         basketActive={basketActive}
         setBasketActive={setBasketActive}
+      />
+      <LikesResult
+        openLikes={openLikes}
+        setOpenLikes={setOpenLikes}
+        resultLikes={resultLikes}
+        setResultLikes={setResultLikes}
+        hasLike={hasLike}
+        setHasLike={setHasLike}
       />
     </div>
   );

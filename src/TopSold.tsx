@@ -12,11 +12,15 @@ export const TopSold = ({
   setCount,
   hasLike,
   setHasLike,
+  likeItem,
+  setLikeItem,
 }: {
   count: number;
   setCount: (num: number) => void;
   hasLike: any;
   setHasLike: (obj: any) => void;
+  likeItem: string[];
+  setLikeItem: (arr: string[]) => void;
 }) => {
   let settings = {
     dots: true,
@@ -28,7 +32,6 @@ export const TopSold = ({
     autoplaySpeed: 2000,
     pauseOnHover: true,
   };
-
   return (
     <div className="TopSold">
       <h1>Хиты продаж</h1>
@@ -39,7 +42,7 @@ export const TopSold = ({
               <img src={el.img} alt="" />
               <div className="buttons">
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     try {
                       const user = JSON.parse(
                         window.localStorage.getItem("user")!
@@ -48,8 +51,40 @@ export const TopSold = ({
                         throw new CatchError(404, "Вы не вошли в аккаунт");
                       }
                       if (el.activeLike) {
+                        const body = {
+                          jsonrpc: "2.0",
+                          id: "1234567890",
+                          method: "LikeDevice.remove",
+                          params: {
+                            staticId: el.id,
+                          },
+                        };
+                        await axios.post("http://localhost:7000", body, {
+                          headers: {
+                            Authorization: `Bearer ${user.token}`,
+                          },
+                        });
                         el.activeLike = false;
                       } else {
+                        const body = {
+                          jsonrpc: "2.0",
+                          id: "1234567890",
+                          method: "LikeDevice.add",
+                          params: {
+                            name: el.title,
+                            price: el.price,
+                            pathImage: el.img,
+                            staticId: el.id,
+                            type: el.type,
+                            brand: el.brand,
+                            isActiveLike: true,
+                          },
+                        };
+                        await axios.post("http://localhost:7000", body, {
+                          headers: {
+                            Authorization: `Bearer ${user.token}`,
+                          },
+                        });
                         el.activeLike = true;
                       }
                       setHasLike([...hasLike]);
