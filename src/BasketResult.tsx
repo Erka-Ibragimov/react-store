@@ -11,6 +11,8 @@ export const BasketResult = ({
   setHasLike,
   basketActive,
   setBasketActive,
+  checkoutActive,
+  setCheckoutActive,
 }: {
   dataBasket: any;
   setDataBasket: any;
@@ -20,6 +22,8 @@ export const BasketResult = ({
   setHasLike: any;
   basketActive: boolean;
   setBasketActive: (el: boolean) => void;
+  checkoutActive: boolean;
+  setCheckoutActive: (el: boolean) => void;
 }) => {
   const [totalSum, setTotalSum] = useState(0);
   const [inputCheck, setInputCheck] = useState(true);
@@ -386,6 +390,8 @@ export const BasketResult = ({
               if (totalSum === 0) {
                 return;
               }
+              setBasketActive(false);
+              setCheckoutActive(true);
             }}
           >
             Перейти к оформлению

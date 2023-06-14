@@ -10,6 +10,7 @@ import axios from "axios";
 import { BasketResult } from "./BasketResult";
 import { CatchError } from "./errorHandler/catchError";
 import { LikesResult } from "./LikesResult";
+import { Checkout } from "./Сheckout";
 
 export const Catalog = ({
   setNameOfUser,
@@ -36,6 +37,7 @@ export const Catalog = ({
   const [dataBasket, setDataBasket] = useState([]);
   const [openLikes, setOpenLikes] = useState(false);
   const [resultLikes, setResultLikes] = useState([]);
+  const [checkoutActive, setCheckoutActive] = useState(false);
   return (
     <div className="Catalog">
       <img src={logo} alt="" className="logoCatalog" />
@@ -183,6 +185,8 @@ export const Catalog = ({
         setHasLike={setHasLike}
         basketActive={basketActive}
         setBasketActive={setBasketActive}
+        checkoutActive={checkoutActive}
+        setCheckoutActive={setCheckoutActive}
       />
       <LikesResult
         openLikes={openLikes}
@@ -191,6 +195,12 @@ export const Catalog = ({
         setResultLikes={setResultLikes}
         hasLike={hasLike}
         setHasLike={setHasLike}
+      />
+      <Checkout
+        checkoutActive={checkoutActive}
+        setCheckoutActive={setCheckoutActive}
+        dataBasket={dataBasket}
+        setDataBasket={setDataBasket}
       />
     </div>
   );

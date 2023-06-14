@@ -1067,3 +1067,17 @@ button {
     }
   }
 }
+.Checkout {
+  display: block;
+  padding: 20px;
+  position: absolute;
+  width: 100%;
+  border: 2px solid #383838;
+  background-color: #fff;
+  top: 100px;
+  left: 0;
+  z-index: 1000;
+  &.none {
+    display: none;
+  }
+}
